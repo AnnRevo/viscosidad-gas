@@ -1,0 +1,68 @@
+"""
+Este programa calcula el valor de la viscosidad de un gas de baja densidad por medio del modelo de Chapman-Enskoog, basado en los parametros de Lennard-Jones. El modelo viene dado por la ecuación:
+u=[2.6693x10^-3(MT)^(-1/2)]/[o^2xDu]
+Donde:
+u=viscosisdad (g/cm*s)
+M=peso molecular (g/mol)
+T=temperatura (°K)
+o=diámetro de colisión (A°)
+Du=desviacion de esfericidad
+@author: Alejandra, Annelly, Leslie y Jocelyn
+"""
+#Importación de librerías
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+#Cálculo de la desviación de la molécula
+print('--------Temperatura (T)----------')
+w=input('Introduzca 1 si T(Celsius) o 2 si T(Farenheit): ')
+T=input('Introduzca el valor de la T: ')
+if w==1:
+T=T+273.15 #T en °C
+else :
+T=(T-32)/1.8 #T en °F
+xls=pd.ExcelFile('Tabla B1.xlsx')
+Datos1=xls.parse(header=0)
+print('------------------------------------------------------------------------')
+print('--------------------------Tabla B-1-----------------------------')
+print(Datos1)
+print('------------------------------------------------------------------------')
+print('VERIFIQUE QUE LA SUSTANCIA DESEADA SE ENCUENTRA EN LA TABLA')
+Ek=input('Introduce el valor de la energia potencial EK: ')
+O=T/Ek
+print('La desviacion de la molecula es: ',O)
+#Interpolación
+Datos=pd.ExcelFile('Tabla B2.xlsx')
+datos=Datos.parse(header=0)
+print('--------------------------Tabla B-2-----------------------------')
+print('Tomados de J.O. Hirschfelder, R.B. Bird y E.L. Spotz, Chem. Revs., 44, 205 (1949)')
+print(datos)
+print('------------------------------------------------------------------------')
+print('Interpola de acuerdo a los datos obtenidos')
+x=O
+x1=input('Introduce el valor de x1: ')
+x2=input('Introduce el valor de x2: ')
+y1=input('Introduce el valor de y1: ')
+y2=input('Introduce el valor de y2: ')
+y=(x-x1)/(x2-x1) *(y2-y1)+y1
+print('------------------------------------------------------------------------')
+print('El valor de la desviacion de esfericidad es: ',y)
+#Cálculo de la viscosidad con el modelo de Chapman-Enskoog
+M=input('Introduce el peso molecular : ')
+R=input('Introduce el radio de la molecula: ')
+u=(2.6693*(10**(-3))*((M*T)**(1.0/2.0)))/((R**2)*y)
+print('------------------------------------------------------------------------')
+print('El valor de la viscosidad es: ', u,'g/cm*s')
+#Gráfica
+T=[]
+U=[]
+for T1 in np.arange(0,100,1):
+u1=(2.6693*(10**(-3))*((M*T1)**(1.0/2.0)))/((R**2)*y)
+T.append(T1)
+U.append(u1)
+plt.figure()
+plt.plot(T,U,'ro')
+plt.title('Temperatura vs Viscosidad', size=14)
+plt.xlabel('Temperatura (C)', size=14)
+plt.ylabel('Viscosidad (g/cm*s)', size=14)
+plt.show()
